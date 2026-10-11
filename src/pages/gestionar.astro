@@ -1,0 +1,206 @@
+---
+import Encabezado from "../components/Encabezado.astro";
+import Pie from "../components/Pie.astro";
+import Base from "../layouts/Base.astro";
+import { COOKIE, gestionConfigurada, sesionValida } from "../lib/auth";
+import { destinoGuardado, listarTodo } from "../lib/catalogo";
+import { formatoPrecio } from "../lib/texto";
+import { CATEGORIAS, imagenSegura, nombreCategoria } from "../lib/tipos";
+
+Astro.response.headers.set("Cache-Control", "no-store");
+
+const authed = sesionValida(Astro.cookies.get(COOKIE)?.value);
+const configurada = gestionConfigurada();
+const destino = destinoGuardado();
+let productos: Awaited<ReturnType<typeof listarTodo>> = [];
+let errorCatalogo = "";
+if (authed) {
+  try {
+    productos = await listarTodo();
+  } catch (error) {
+    errorCatalogo = error instanceof Error ? error.message : "No se pudo abrir el catálogo.";
+  }
+}
+---
+
+<Base
+  titulo="Gestión · Gelarte"
+  descripcion="Espacio privado para agregar y actualizar las gelatinas de Gelarte."
+  robots="noindex, nofollow"
+>
+  <Encabezado />
+  <main class="mx-auto w-full max-w-3xl flex-1 px-4 py-10">
+    {
+      !authed ? (
+        <section class="mx-auto max-w-md rounded-[2rem] bg-white p-6 shadow-[0_12px_32px_rgba(123,63,27,0.06)] sm:p-8">
+          <h1 class="font-serif text-5xl leading-none font-semibold">Gestión</h1>
+          <p class="mt-4 leading-relaxed">
+            Aquí la dueña agrega un sabor nuevo: foto, descripción, categoría y precio.
+          </p>
+          {
+            configurada ? (
+              <form id="entrar" class="mt-6 grid gap-4">
+                <label>
+                  <span class="mb-2 block text-sm font-bold">Contraseña</span>
+                  <input class="campo" type="password" name="password" autocomplete="current-password" required />
+                </label>
+                <p data-error class="font-bold" hidden role="alert" />
+                <button class="boton" type="submit">Entrar</button>
+                {import.meta.env.DEV && <p class="text-sm text-marron/70">En esta copia local la contraseña es gelarte.</p>}
+              </form>
+            ) : (
+              <p class="mt-6 rounded-2xl bg-rosa p-4" role="status">
+                Falta definir ADMIN_PASSWORD y SESSION_SECRET en Vercel para abrir la gestión.
+              </p>
+            )
+          }
+        </section>
+      ) : (
+        <div class="grid gap-8">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 class="font-serif text-5xl leading-none font-semibold">Catálogo</h1>
+              <p class="mt-3 max-w-xl leading-relaxed">
+                Los sabores de ejemplo se pueden corregir o quitar. Uno nuevo aparece en la página al guardarlo.
+              </p>
+            </div>
+            <button id="salir" class="boton-linea" type="button">Salir</button>
+          </div>
+
+          {
+            destino === "ninguno" && (
+              <p class="rounded-2xl bg-rosa p-4" role="status">
+                Esta copia todavía no puede guardar cambios. Conecta un almacenamiento Blob en Vercel.
+              </p>
+            )
+          }
+          {
+            destino === "local" && (
+              <p class="rounded-2xl bg-white p-4 text-sm">
+                En esta copia local, los cambios se guardan solo en este equipo.
+              </p>
+            )
+          }
+
+          <form id="nueva" class="grid gap-4 rounded-[2rem] bg-white p-6 shadow-[0_12px_32px_rgba(123,63,27,0.06)]">
+            <h2 class="font-serif text-3xl leading-none font-semibold">Nueva gelatina</h2>
+            <label>
+              <span class="mb-2 block text-sm font-bold">Nombre</span>
+              <input class="campo" name="nombre" required maxlength="60" autocomplete="off" />
+            </label>
+            <label>
+              <span class="mb-2 block text-sm font-bold">Descripción</span>
+              <textarea class="campo min-h-24" name="descripcion" required maxlength="240" />
+            </label>
+            <div class="grid gap-4 sm:grid-cols-3">
+              <label>
+                <span class="mb-2 block text-sm font-bold">Categoría</span>
+                <select class="campo" name="categoria" required>
+                  {CATEGORIAS.map((categoria) => (
+                    <option value={categoria.id}>{categoria.nombre}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span class="mb-2 block text-sm font-bold">Precio</span>
+                <input class="campo" name="precio" type="number" inputmode="numeric" min="1" max="9999" step="1" required />
+              </label>
+              <label>
+                <span class="mb-2 block text-sm font-bold">Unidad</span>
+                <input class="campo" name="unidad" value="vaso" maxlength="24" />
+              </label>
+            </div>
+            <label>
+              <span class="mb-2 block text-sm font-bold">Foto</span>
+              <input id="foto" class="campo" name="imagen" type="file" accept="image/*" />
+              <span class="mt-2 block text-sm text-marron/70">Si no eliges foto, se usa la ilustración genérica. Puede salir del teléfono.</span>
+            </label>
+            <img id="vista" alt="Vista previa de la foto" class="h-40 w-40 rounded-2xl object-cover" hidden />
+            <p data-error class="font-bold" hidden role="alert" />
+            <button class="boton" type="submit">Publicar gelatina</button>
+          </form>
+
+          {
+            errorCatalogo ? (
+              <p class="rounded-[1.5rem] bg-white p-6 font-bold" role="alert">{errorCatalogo}</p>
+            ) : (
+              <div class="grid gap-3">
+                <h2 class="font-serif text-3xl leading-none font-semibold">Publicadas</h2>
+                {productos.length === 0 && <p class="rounded-[1.5rem] bg-white p-6">El catálogo está vacío.</p>}
+                {productos.map((producto) => (
+                  <details class="rounded-[1.5rem] border border-ocre/50 bg-white">
+                    <summary class="flex cursor-pointer items-center gap-3 p-4">
+                      <img
+                        src={imagenSegura(producto.imagen)}
+                        alt=""
+                        width="56"
+                        height="56"
+                        class="h-14 w-14 rounded-xl bg-rosa object-cover"
+                      />
+                      <span class="min-w-0 flex-1">
+                        <span class="block truncate font-serif text-2xl leading-none">{producto.nombre}</span>
+                        <span class="mt-1 block text-sm text-salvia">
+                          {nombreCategoria(producto.categoria)} · {formatoPrecio(producto.precio)}
+                          {!producto.visible && <span class="ml-2 font-bold text-marron">Oculta</span>}
+                        </span>
+                      </span>
+                      <span class="text-sm font-bold">Editar</span>
+                    </summary>
+                    <form class="grid gap-4 border-t border-ocre/30 p-4" data-editar data-id={producto.id}>
+                      <label>
+                        <span class="mb-2 block text-sm font-bold">Nombre</span>
+                        <input class="campo" name="nombre" required maxlength="60" value={producto.nombre} />
+                      </label>
+                      <label>
+                        <span class="mb-2 block text-sm font-bold">Descripción</span>
+                        <textarea class="campo min-h-24" name="descripcion" required maxlength="240">{producto.descripcion}</textarea>
+                      </label>
+                      <div class="grid gap-4 sm:grid-cols-3">
+                        <label>
+                          <span class="mb-2 block text-sm font-bold">Categoría</span>
+                          <select class="campo" name="categoria">
+                            {CATEGORIAS.map((categoria) => (
+                              <option value={categoria.id} selected={categoria.id === producto.categoria}>
+                                {categoria.nombre}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        <label>
+                          <span class="mb-2 block text-sm font-bold">Precio</span>
+                          <input class="campo" name="precio" type="number" min="1" max="9999" step="1" required value={producto.precio} />
+                        </label>
+                        <label>
+                          <span class="mb-2 block text-sm font-bold">Unidad</span>
+                          <input class="campo" name="unidad" maxlength="24" value={producto.unidad} />
+                        </label>
+                      </div>
+                      <label class="flex items-center gap-3 font-bold">
+                        <input type="checkbox" name="visible" checked={producto.visible} class="h-5 w-5 accent-marron" />
+                        Visible en el catálogo
+                      </label>
+                      <label>
+                        <span class="mb-2 block text-sm font-bold">Cambiar foto</span>
+                        <input class="campo" name="imagen" type="file" accept="image/*" />
+                      </label>
+                      <p data-error class="font-bold" hidden role="alert" />
+                      <div class="flex flex-wrap gap-3">
+                        <button class="boton" type="submit">Guardar cambios</button>
+                        <button class="boton-linea" type="button" data-borrar={producto.id}>Quitar</button>
+                      </div>
+                    </form>
+                  </details>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      )
+    }
+  </main>
+  <Pie />
+</Base>
+
+<script>
+  import "../scripts/gestionar.ts";
+</script>

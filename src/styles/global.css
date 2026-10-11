@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --color-rosa: #ffc0cb;
+  --color-marron: #7b3f1b;
+  --color-crema: #fff3e3;
+  --color-salvia: #76896c;
+  --color-ocre: #d4a373;
+  --color-coral: #e78a86;
+  --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  --font-sans: "Nunito", "Segoe UI", sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-image: radial-gradient(900px 420px at 50% -120px, #ffd5de, transparent 70%);
+  background-attachment: fixed;
+}
+
+::selection {
+  background: #ffc0cb;
+  color: #7b3f1b;
+}
+
+:focus-visible {
+  outline: 2px solid #7b3f1b;
+  outline-offset: 3px;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+summary {
+  list-style: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+.campo {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid color-mix(in srgb, #d4a373 75%, #7b3f1b);
+  background: white;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  color: #7b3f1b;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #e78a86;
+  padding: 0.7rem 1.25rem;
+  text-align: center;
+  font-weight: 700;
+  color: #7b3f1b;
+  transition: background-color 150ms ease;
+}
+
+.boton:hover {
+  background: #ffc0cb;
+}
+
+.boton-linea {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, #7b3f1b 28%, transparent);
+  background: white;
+  padding: 0.7rem 1.25rem;
+  text-align: center;
+  font-weight: 700;
+  color: #7b3f1b;
+}
+
+.boton-linea:hover {
+  background: #ffc0cb;
+}
+
+.boton:disabled,
+.boton-linea:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .tarjeta {
+    transition: none;
+  }
+}

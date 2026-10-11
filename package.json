@@ -1,0 +1,22 @@
+{
+  "name": "gelarte",
+  "description": "Catálogo de gelatinas caseras Gelarte, con gestión privada para la dueña.",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev --host 0.0.0.0 --port 4327",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/vercel": "^11.0.13",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vercel/blob": "^2.8.1",
+    "astro": "^7.3.8",
+    "tailwindcss": "^4.3.3"
+  }
+}

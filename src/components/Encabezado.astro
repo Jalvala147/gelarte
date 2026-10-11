@@ -1,0 +1,19 @@
+---
+import { enlaceWhatsapp, negocio } from "../data/negocio";
+
+const pedido = enlaceWhatsapp("Hola, quiero hacer un pedido de gelatinas Gelarte.");
+---
+
+<header class="sticky top-0 z-20 border-b border-ocre/40 bg-crema/90 backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <a href="/" class="flex items-center gap-2">
+      <img src="/favicon.svg" alt="" width="40" height="40" class="h-10 w-10" />
+      <span class="font-serif text-3xl leading-none font-semibold tracking-wide">{negocio.nombre}</span>
+    </a>
+    <nav class="flex items-center gap-3 text-sm font-bold sm:gap-5" aria-label="Secciones">
+      <a href="/#catalogo">Catálogo</a>
+      <a href="/#contacto" class="hidden min-[420px]:inline">Contacto</a>
+      <a class="boton px-4 py-2 text-sm" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>
+    </nav>
+  </div>
+</header>

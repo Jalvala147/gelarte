@@ -1,0 +1,38 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  titulo: string;
+  descripcion: string;
+  robots?: string;
+}
+
+const { titulo, descripcion, robots } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    {robots && <meta name="robots" content={robots} />}
+    <meta name="theme-color" content="#FFC0CB" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/marca/logo.jpg" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:image" content="/marca/logo.jpg" />
+    <meta property="og:locale" content="es_MX" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="flex min-h-screen flex-col bg-crema font-sans text-marron antialiased">
+    <slot />
+  </body>
+</html>

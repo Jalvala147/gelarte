@@ -1,0 +1,46 @@
+---
+import { enlaceWhatsapp } from "../data/negocio";
+import { formatoPrecio, normalizar } from "../lib/texto";
+import { imagenSegura, nombreCategoria, type Producto } from "../lib/tipos";
+
+interface Props {
+  producto: Producto;
+}
+
+const { producto } = Astro.props;
+const categoria = nombreCategoria(producto.categoria);
+const precio = formatoPrecio(producto.precio);
+const foto = imagenSegura(producto.imagen);
+const generica = foto.endsWith("/imagenes/gelatina.svg");
+const pedido = enlaceWhatsapp(`Hola, quiero apartar la gelatina de ${producto.nombre} (${precio}).`);
+const buscar = normalizar(`${producto.nombre} ${producto.descripcion} ${categoria}`);
+---
+
+<article
+  class="tarjeta flex flex-col overflow-hidden rounded-[1.75rem] border border-ocre/50 bg-white shadow-[0_12px_32px_rgba(123,63,27,0.06)] transition duration-200 hover:-translate-y-0.5"
+  data-producto
+  data-categoria={producto.categoria}
+  data-buscar={buscar}
+>
+  <div class:list={["flex aspect-square items-center justify-center overflow-hidden", generica ? "bg-rosa p-8" : "bg-rosa"]}>
+    <img
+      src={foto}
+      alt={`Gelatina de ${producto.nombre}`}
+      width="640"
+      height="640"
+      class:list={[generica ? "h-full w-full object-contain" : "h-full w-full object-cover"]}
+    />
+  </div>
+  <div class="flex flex-1 flex-col gap-3 p-5">
+    <p class="text-xs font-bold tracking-[0.16em] text-salvia uppercase">{categoria}</p>
+    <h2 class="font-serif text-3xl leading-none font-semibold">{producto.nombre}</h2>
+    <p class="text-sm leading-relaxed text-marron/80">{producto.descripcion}</p>
+    <div class="mt-auto flex items-end justify-between gap-3 pt-2">
+      <p>
+        <span class="font-serif text-4xl leading-none">{precio}</span>
+        <span class="mt-1 block text-sm text-marron/70">{producto.unidad}</span>
+      </p>
+      <a class="boton" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>
+    </div>
+  </div>
+</article>

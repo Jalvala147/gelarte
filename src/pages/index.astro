@@ -1,0 +1,151 @@
+---
+import Tarjeta from "../components/Tarjeta.astro";
+import Encabezado from "../components/Encabezado.astro";
+import Pie from "../components/Pie.astro";
+import Base from "../layouts/Base.astro";
+import { enlaceWhatsapp, negocio, telefonoVisible } from "../data/negocio";
+import { listarPublico } from "../lib/catalogo";
+import { CATEGORIAS } from "../lib/tipos";
+
+Astro.response.headers.set("Cache-Control", "no-store");
+
+let productos: Awaited<ReturnType<typeof listarPublico>> = [];
+let errorCatalogo = "";
+try {
+  productos = await listarPublico();
+} catch (error) {
+  errorCatalogo = error instanceof Error ? error.message : "No se pudo abrir el catálogo.";
+}
+
+const pedido = enlaceWhatsapp("Hola, quiero hacer un pedido de gelatinas Gelarte.");
+const telefono = telefonoVisible();
+const conteo = productos.length === 1 ? "1 gelatina" : `${productos.length} gelatinas`;
+const pasos = [
+  { numero: "1", titulo: "Elige el sabor", texto: "Revisa el catálogo y anota cuántas piezas quieres." },
+  { numero: "2", titulo: "Escríbenos", texto: "Manda un WhatsApp con el nombre de la gelatina." },
+  { numero: "3", titulo: "Acordamos la entrega", texto: "La apartamos y coordinamos cuándo recogerla." },
+];
+---
+
+<Base
+  titulo="Gelarte — Gelatinas caseras"
+  descripcion="Gelatinas caseras por encargo. Elige el sabor, mira el precio y aparta la tuya por WhatsApp."
+>
+  <Encabezado />
+  <main>
+    <section class="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center">
+      <img
+        src="/marca/logo.jpg"
+        alt="Gelarte Naturalmente"
+        width="900"
+        height="900"
+        class="mx-auto w-full max-w-[320px] rounded-[2rem] shadow-[0_18px_50px_rgba(123,63,27,0.12)]"
+      />
+      <p class="mx-auto mt-8 max-w-xl text-lg leading-relaxed">
+        Gelatinas caseras por encargo. Elige la tuya y apártala por WhatsApp.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <a class="boton" href="#catalogo">Ver sabores</a>
+        <a class="boton-linea" href={pedido} target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
+      </div>
+    </section>
+
+    <section id="catalogo" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-10">
+      <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h2 class="font-serif text-5xl leading-none font-semibold">Sabores</h2>
+          <p id="conteo" class="mt-3 font-bold text-salvia" aria-live="polite">{conteo}</p>
+        </div>
+        <label class="block w-full sm:max-w-xs">
+          <span class="mb-2 block text-sm font-bold">Buscar</span>
+          <input id="buscar" class="campo" type="search" placeholder="Fresa, mango, mosaico…" />
+        </label>
+      </div>
+
+      <div class="mt-6 flex gap-2 overflow-x-auto pb-2" role="toolbar" aria-label="Filtrar por categoría">
+        <button
+          type="button"
+          class="rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
+          data-filtro="todas"
+          aria-pressed="true"
+        >
+          Todas
+        </button>
+        {
+          CATEGORIAS.map((categoria) => (
+            <button
+              type="button"
+              class="rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
+              data-filtro={categoria.id}
+              aria-pressed="false"
+            >
+              {categoria.nombre}
+            </button>
+          ))
+        }
+      </div>
+      <noscript>
+        <p class="mt-3 text-sm">Sin JavaScript se muestran todos los sabores, sin filtro.</p>
+      </noscript>
+
+      {
+        errorCatalogo ? (
+          <p class="mt-8 rounded-[1.5rem] bg-white p-6 font-bold" role="alert">
+            {errorCatalogo}
+          </p>
+        ) : (
+          <>
+            <p id="vacio" class="mt-8 rounded-[1.5rem] bg-white p-6" hidden>
+              Ninguna gelatina coincide con esa búsqueda.
+            </p>
+            {
+              productos.length === 0 ? (
+                <p class="mt-8 rounded-[1.5rem] bg-white p-6">Todavía no hay gelatinas publicadas.</p>
+              ) : (
+                <div class="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                  {productos.map((producto) => (
+                    <Tarjeta producto={producto} />
+                  ))}
+                </div>
+              )
+            }
+          </>
+        )
+      }
+    </section>
+
+    <section id="contacto" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-8">
+      <div class="rounded-[2rem] bg-rosa px-6 py-10 sm:px-10">
+        <h2 class="font-serif text-5xl leading-none font-semibold">Aparta la tuya</h2>
+        <p class="mt-4 max-w-xl text-lg leading-relaxed">
+          Escríbenos por WhatsApp con el sabor y la cantidad. La preparamos en casa, por encargo.
+        </p>
+        <ol class="mt-8 grid gap-4 sm:grid-cols-3">
+          {
+            pasos.map((paso) => (
+              <li class="rounded-3xl bg-crema p-5">
+                <span class="font-serif text-4xl leading-none">{paso.numero}</span>
+                <p class="mt-3 font-bold">{paso.titulo}</p>
+                <p class="mt-1 text-sm leading-relaxed">{paso.texto}</p>
+              </li>
+            ))
+          }
+        </ol>
+        <div class="mt-8 flex flex-col gap-5 border-t border-marron/10 pt-8 sm:flex-row sm:items-end sm:justify-between">
+          <div class="space-y-1">
+            <p class="font-bold">WhatsApp {telefono}</p>
+            <p>{negocio.horario}</p>
+            <p>{negocio.anticipacion}</p>
+            <p>{negocio.entrega}</p>
+          </div>
+          <a class="boton" href={pedido} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
+        </div>
+      </div>
+    </section>
+  </main>
+  <Pie />
+</Base>
+
+<script>
+  import "../scripts/catalogo.ts";
+</script>
