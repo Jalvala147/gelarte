@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" fill="none" role="img" aria-label="Ilustración de una gelatina">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 200" width="240" height="200" fill="none">
   <ellipse cx="120" cy="162" rx="82" ry="16" stroke="#7B3F1B" stroke-width="4"/>
   <ellipse cx="120" cy="154" rx="60" ry="9" stroke="#7B3F1B" stroke-width="3"/>
   <path d="M70 148C68 92 84 58 120 54C156 58 172 92 170 148H70Z" fill="#FFE4EA" stroke="#7B3F1B" stroke-width="4" stroke-linejoin="round"/>

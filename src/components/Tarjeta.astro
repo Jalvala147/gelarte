@@ -22,13 +22,13 @@ const buscar = normalizar(`${producto.nombre} ${producto.descripcion} ${categori
   data-categoria={producto.categoria}
   data-buscar={buscar}
 >
-  <div class:list={["flex aspect-square items-center justify-center overflow-hidden", generica ? "bg-rosa p-8" : "bg-rosa"]}>
+  <div class="relative aspect-square overflow-hidden bg-rosa">
     <img
       src={foto}
       alt={`Gelatina de ${producto.nombre}`}
       width="640"
       height="640"
-      class:list={[generica ? "h-full w-full object-contain" : "h-full w-full object-cover"]}
+      class:list={["absolute inset-0 h-full w-full", generica ? "object-contain p-8" : "object-cover"]}
     />
   </div>
   <div class="flex flex-1 flex-col gap-3 p-5">
