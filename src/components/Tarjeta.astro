@@ -36,20 +36,22 @@ const buscar = normalizar(
       alt={`Gelatina de ${producto.nombre}`}
       width="640"
       height="640"
+      loading="lazy"
+      decoding="async"
       class:list={["absolute inset-0 h-full w-full", generica ? "object-contain p-8" : "object-cover"]}
       style={generica ? undefined : `object-position: center ${encuadre}%`}
     />
   </div>
   <div class="flex flex-1 flex-col gap-3 p-5">
     <p class="text-xs font-bold tracking-[0.16em] text-salvia uppercase">{categoria}</p>
-    <h2 class="font-serif text-3xl leading-none font-semibold">{producto.nombre}</h2>
+    <h2 class="font-serif text-3xl leading-none font-semibold break-words">{producto.nombre}</h2>
     <p class="text-sm leading-relaxed text-marron/80">{producto.descripcion}</p>
     <div class="mt-auto flex items-end justify-between gap-3 pt-2">
-      <p>
-        <span class:list={["font-serif leading-none", consulta ? "text-2xl" : "text-4xl"]}>{precio}</span>
+      <p class="min-w-0">
+        <span class:list={["font-serif leading-none", consulta ? "text-2xl" : "text-3xl sm:text-4xl"]}>{precio}</span>
         <span class="mt-1 block text-sm text-marron/70">{producto.unidad}</span>
       </p>
-      <a class="boton" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>
+      <a class="boton shrink-0" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>
     </div>
   </div>
 </article>

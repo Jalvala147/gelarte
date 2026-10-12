@@ -7,10 +7,10 @@ import { negocio } from "../data/negocio";
 
 <Base titulo={`Página no encontrada · ${negocio.nombre}`} descripcion={`Esa página no está en ${negocio.nombre}.`}>
   <Encabezado />
-  <main class="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-24 text-center">
-    <h1 class="font-serif text-5xl leading-none font-semibold">Esa página no está</h1>
+  <main class="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-16 text-center sm:py-24">
+    <h1 class="font-serif text-4xl leading-none font-semibold sm:text-5xl">Esa página no está</h1>
     <p class="mt-4 text-lg">El catálogo sigue en la página principal.</p>
-    <a class="boton mt-8" href="/">Volver al catálogo</a>
+    <a class="boton mt-8 w-full sm:w-auto" href="/">Volver al catálogo</a>
   </main>
   <Pie />
 </Base>

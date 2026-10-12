@@ -4,15 +4,15 @@ import { enlaceWhatsapp, negocio } from "../data/negocio";
 const pedido = enlaceWhatsapp(`Hola, quiero hacer un pedido de gelatinas ${negocio.nombre}.`);
 ---
 
-<header class="sticky top-0 z-20 border-b border-ocre/40 bg-crema/90 backdrop-blur-md">
-  <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
-    <a href="/" class="flex items-center gap-2">
-      <img src="/favicon.ico" alt="" width="40" height="40" class="h-10 w-10 rounded-xl" />
-      <span class="font-serif text-3xl leading-none font-semibold tracking-wide">{negocio.nombre}</span>
+<header class="sticky top-0 z-20 border-b border-ocre/40 bg-crema/90 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+  <div class="mx-auto flex max-w-6xl items-center justify-between gap-2 px-4 py-2.5 sm:gap-3 sm:py-3">
+    <a href="/" class="flex min-w-0 items-center gap-2">
+      <img src="/favicon.ico" alt="" width="40" height="40" class="h-9 w-9 shrink-0 rounded-xl sm:h-10 sm:w-10" />
+      <span class="truncate font-serif text-2xl leading-none font-semibold tracking-wide sm:text-3xl">{negocio.nombre}</span>
     </a>
-    <nav class="flex items-center gap-3 text-sm font-bold sm:gap-5" aria-label="Secciones">
-      <a href="/#catalogo">Catálogo</a>
-      <a href="/#contacto" class="hidden min-[420px]:inline">Contacto</a>
+    <nav class="flex shrink-0 items-center gap-2 text-sm font-bold sm:gap-5" aria-label="Secciones">
+      <a href="/#catalogo" class="hidden sm:inline">Catálogo</a>
+      <a href="/#contacto" class="hidden md:inline">Contacto</a>
       <a class="boton px-4 py-2 text-sm" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>
     </nav>
   </div>

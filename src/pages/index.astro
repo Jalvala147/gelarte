@@ -33,18 +33,18 @@ const pasos = [
 >
   <Encabezado />
   <main>
-    <section class="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center">
+    <section class="mx-auto max-w-6xl px-4 pt-6 pb-4 text-center sm:pt-10 sm:pb-6">
       <img
         src="/marca/logo.jpg"
         alt={`${negocio.nombre} Naturalmente`}
         width="900"
         height="900"
-        class="mx-auto w-full max-w-[320px] rounded-[2rem] shadow-[0_18px_50px_rgba(123,63,27,0.12)]"
+        class="mx-auto w-full max-w-[220px] rounded-[2rem] shadow-[0_18px_50px_rgba(123,63,27,0.12)] sm:max-w-[320px]"
       />
-      <p class="mx-auto mt-8 max-w-xl text-lg leading-relaxed">
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed sm:mt-8">
         Gelatinas y pays por encargo. Elige la tuya y apártala por WhatsApp.
       </p>
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
+      <div class="mt-6 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
         <a class="boton" href="#catalogo">Ver sabores</a>
         <a class="boton-linea" href={pedido} target="_blank" rel="noopener noreferrer">Pedir por WhatsApp</a>
       </div>
@@ -53,7 +53,7 @@ const pasos = [
     <section id="catalogo" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-10">
       <div class="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h2 class="font-serif text-5xl leading-none font-semibold">Sabores</h2>
+          <h2 class="font-serif text-4xl leading-none font-semibold sm:text-5xl">Sabores</h2>
           <p id="conteo" class="mt-3 font-bold text-salvia" aria-live="polite">{conteo}</p>
           <p class="mt-1 text-sm text-marron/70">El precio se acuerda por WhatsApp.</p>
         </div>
@@ -63,10 +63,10 @@ const pasos = [
         </label>
       </div>
 
-      <div class="mt-6 flex gap-2 overflow-x-auto pb-2" role="toolbar" aria-label="Filtrar por categoría">
+      <div class="filtros -mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-2" role="toolbar" aria-label="Filtrar por categoría">
         <button
           type="button"
-          class="rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
+          class="shrink-0 rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
           data-filtro="todas"
           aria-pressed="true"
         >
@@ -76,7 +76,7 @@ const pasos = [
           CATEGORIAS.map((categoria) => (
             <button
               type="button"
-              class="rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
+              class="shrink-0 rounded-full border border-ocre/60 bg-white px-4 py-2 text-sm font-bold whitespace-nowrap aria-pressed:border-marron aria-pressed:bg-marron aria-pressed:text-crema"
               data-filtro={categoria.id}
               aria-pressed="false"
             >
@@ -116,8 +116,8 @@ const pasos = [
     </section>
 
     <section id="contacto" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-8">
-      <div class="rounded-[2rem] bg-rosa px-6 py-10 sm:px-10">
-        <h2 class="font-serif text-5xl leading-none font-semibold">Aparta la tuya</h2>
+      <div class="rounded-[2rem] bg-rosa px-4 py-8 sm:px-10 sm:py-10">
+        <h2 class="font-serif text-4xl leading-none font-semibold sm:text-5xl">Aparta la tuya</h2>
         <p class="mt-4 max-w-xl text-lg leading-relaxed">
           Escríbenos por WhatsApp con el sabor y la cantidad. La preparamos en casa, por encargo.
         </p>
@@ -139,7 +139,7 @@ const pasos = [
             <p>{negocio.anticipacion}</p>
             <p>{negocio.entrega}</p>
           </div>
-          <a class="boton" href={pedido} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
+          <a class="boton w-full sm:w-auto" href={pedido} target="_blank" rel="noopener noreferrer">Escribir por WhatsApp</a>
         </div>
       </div>
     </section>
