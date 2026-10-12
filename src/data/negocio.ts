@@ -1,9 +1,8 @@
-// Cambia `whatsapp` por el número de la dueña: código de país, sin + ni espacios.
 export const negocio = {
-  nombre: "Gelarte",
-  whatsapp: "525500000000",
+  nombre: "GELARTE",
+  whatsapp: "523314414885",
   horario: "Martes a domingo, de 10:00 a 19:00",
-  anticipacion: "Los pedidos se apartan con un día de anticipación.",
+  anticipacion: "Los pedidos se apartan con tres días de anticipación.",
   entrega: "La entrega se acuerda por WhatsApp.",
 };
 

@@ -16,11 +16,22 @@ export type Producto = {
   precio: number;
   unidad: string;
   imagen: string;
+  /** Porcentaje vertical del recorte, de 0 (arriba) a 100 (abajo). */
+  encuadre?: number;
+  /** Palabras extra para la búsqueda, además del nombre y la descripción. */
+  etiquetas?: string[];
   visible: boolean;
   creado: string;
 };
 
-export const IMAGEN_GENERICA = "/imagenes/gelatina.svg";
+export function encuadreDe(valor: unknown) {
+  if (valor === undefined || valor === null || valor === "") return 50;
+  const numero = typeof valor === "number" ? valor : Number(valor);
+  if (!Number.isFinite(numero)) return 50;
+  return Math.min(100, Math.max(0, Math.round(numero)));
+}
+
+export const IMAGEN_GENERICA = "/marca/logo.jpg";
 export const ID_VALIDO = /^[a-zA-Z0-9-]{1,80}$/;
 
 export function esCategoria(valor: string): valor is CategoriaId {
@@ -56,6 +67,13 @@ export function esProducto(valor: unknown): valor is Producto {
     Number.isInteger(producto.precio) &&
     typeof producto.unidad === "string" &&
     typeof producto.imagen === "string" &&
+    (producto.encuadre === undefined ||
+      (typeof producto.encuadre === "number" &&
+        Number.isInteger(producto.encuadre) &&
+        producto.encuadre >= 0 &&
+        producto.encuadre <= 100)) &&
+    (producto.etiquetas === undefined ||
+      (Array.isArray(producto.etiquetas) && producto.etiquetas.every((etiqueta) => typeof etiqueta === "string"))) &&
     typeof producto.visible === "boolean" &&
     typeof producto.creado === "string"
   );

@@ -17,7 +17,7 @@ try {
   errorCatalogo = error instanceof Error ? error.message : "No se pudo abrir el catálogo.";
 }
 
-const pedido = enlaceWhatsapp("Hola, quiero hacer un pedido de gelatinas Gelarte.");
+const pedido = enlaceWhatsapp(`Hola, quiero hacer un pedido de gelatinas ${negocio.nombre}.`);
 const telefono = telefonoVisible();
 const conteo = productos.length === 1 ? "1 gelatina" : `${productos.length} gelatinas`;
 const pasos = [
@@ -28,21 +28,21 @@ const pasos = [
 ---
 
 <Base
-  titulo="Gelarte — Gelatinas caseras"
-  descripcion="Gelatinas caseras por encargo. Elige el sabor, mira el precio y aparta la tuya por WhatsApp."
+  titulo={`${negocio.nombre} — Gelatinas caseras`}
+  descripcion="Gelatinas caseras por encargo: pasteles, vasitos y pays. Elige la tuya y apártala por WhatsApp."
 >
   <Encabezado />
   <main>
     <section class="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center">
       <img
         src="/marca/logo.jpg"
-        alt="Gelarte Naturalmente"
+        alt={`${negocio.nombre} Naturalmente`}
         width="900"
         height="900"
         class="mx-auto w-full max-w-[320px] rounded-[2rem] shadow-[0_18px_50px_rgba(123,63,27,0.12)]"
       />
       <p class="mx-auto mt-8 max-w-xl text-lg leading-relaxed">
-        Gelatinas caseras por encargo. Elige la tuya y apártala por WhatsApp.
+        Gelatinas, vasitos de gelatina y pays por encargo. Elige la tuya y apártala por WhatsApp.
       </p>
       <div class="mt-6 flex flex-wrap items-center justify-center gap-3">
         <a class="boton" href="#catalogo">Ver sabores</a>
@@ -55,10 +55,11 @@ const pasos = [
         <div>
           <h2 class="font-serif text-5xl leading-none font-semibold">Sabores</h2>
           <p id="conteo" class="mt-3 font-bold text-salvia" aria-live="polite">{conteo}</p>
+          <p class="mt-1 text-sm text-marron/70">El precio se acuerda por WhatsApp.</p>
         </div>
         <label class="block w-full sm:max-w-xs">
           <span class="mb-2 block text-sm font-bold">Buscar</span>
-          <input id="buscar" class="campo" type="search" placeholder="Fresa, mango, mosaico…" />
+          <input id="buscar" class="campo" type="search" placeholder="Fresa, café, elote…" />
         </label>
       </div>
 

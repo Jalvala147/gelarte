@@ -42,6 +42,13 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+.encuadre {
+  width: 100%;
+  height: 1.75rem;
+  accent-color: #7b3f1b;
+  cursor: grab;
+}
+
 .campo {
   width: 100%;
   border-radius: 1rem;

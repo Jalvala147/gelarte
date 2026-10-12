@@ -1,7 +1,9 @@
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import semillaJson from "../data/productos.json";
+import { etiquetasDe } from "./texto";
 import {
+  encuadreDe,
   esCategoria,
   esProducto,
   IMAGEN_GENERICA,
@@ -20,6 +22,8 @@ export type DatosProducto = {
   categoria: CategoriaId;
   precio: number;
   unidad: string;
+  encuadre: number;
+  etiquetas: string[];
 };
 
 export type ImagenSubida = {
@@ -48,7 +52,11 @@ function parsearLista(valor: unknown): Producto[] {
   if (!Array.isArray(valor) || !valor.every(esProducto)) {
     throw new Error("No se pudo leer el catálogo.");
   }
-  return valor;
+  return valor.map((producto) => ({
+    ...producto,
+    encuadre: encuadreDe(producto.encuadre),
+    etiquetas: etiquetasDe(producto.etiquetas),
+  }));
 }
 
 async function leerLocal() {
@@ -165,7 +173,7 @@ async function guardarImagen(id: string, imagen: ImagenSubida) {
 }
 
 async function borrarImagen(url: string) {
-  if (url === IMAGEN_GENERICA || url.endsWith("/imagenes/gelatina.svg")) return;
+  if (url === IMAGEN_GENERICA || url.endsWith("/marca/logo.jpg") || url.endsWith("/imagenes/gelatina.svg")) return;
   if (url.startsWith("/uploads/")) {
     await unlink(path.join(CARPETA_SUBIDAS, path.basename(url))).catch(() => undefined);
     return;
@@ -231,6 +239,8 @@ export function leerDatos(form: FormData): { ok: true; datos: DatosProducto } | 
   const categoria = String(form.get("categoria") ?? "");
   const precio = Number(form.get("precio"));
   const unidad = String(form.get("unidad") ?? "vaso").trim().replace(/\s+/g, " ") || "vaso";
+  const encuadre = encuadreDe(form.get("encuadre"));
+  const etiquetas = etiquetasDe(form.get("etiquetas"));
 
   if (nombre.length < 2 || nombre.length > 60) {
     return { ok: false, error: "El nombre debe tener entre 2 y 60 caracteres." };
@@ -239,11 +249,11 @@ export function leerDatos(form: FormData): { ok: true; datos: DatosProducto } | 
     return { ok: false, error: "La descripción debe tener entre 8 y 240 caracteres." };
   }
   if (!esCategoria(categoria)) return { ok: false, error: "Elige una categoría de la lista." };
-  if (!Number.isInteger(precio) || precio < 1 || precio > 9999) {
-    return { ok: false, error: "El precio debe ser un número entero entre 1 y 9999." };
+  if (!Number.isInteger(precio) || precio < 0 || precio > 9999) {
+    return { ok: false, error: "El precio debe ser un número entero entre 0 y 9999. Usa 0 si se consulta por WhatsApp." };
   }
   if (unidad.length > 24) return { ok: false, error: "La unidad es demasiado larga." };
-  return { ok: true, datos: { nombre, descripcion, categoria, precio, unidad } };
+  return { ok: true, datos: { nombre, descripcion, categoria, precio, unidad, encuadre, etiquetas } };
 }
 
 export async function eliminarProducto(id: string) {

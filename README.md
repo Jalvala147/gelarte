@@ -17,7 +17,7 @@ En local, la gestión está en [http://127.0.0.1:4327/gestionar](http://127.0.0.
 
 El WhatsApp, el horario y la nota de entrega están en `src/data/negocio.ts`. El número va con código de país, sin `+` ni espacios, por ejemplo `525512345678`.
 
-Los 30 sabores iniciales viven en `src/data/productos.json` y comparten la ilustración `public/imagenes/gelatina.svg`. Cuando la dueña guarda un cambio, el catálogo activo pasa a ser el de Blob (en Vercel) o el archivo local (en tu máquina).
+El catálogo de partida vive en `src/data/productos.json` y las fotos en `public/imagenes/`. Cuando la dueña guarda un cambio, el catálogo activo pasa a ser el de Blob (en Vercel) o el archivo local (en tu máquina).
 
 ## Publicar en Vercel
 
@@ -28,6 +28,6 @@ Los 30 sabores iniciales viven en `src/data/productos.json` y comparten la ilust
    - `SESSION_SECRET`: una frase de al menos 16 caracteres.
 4. Publica.
 
-Sin Blob, el sitio muestra el catálogo de ejemplo, pero la gestión no puede guardar productos nuevos. Las fotos se reducen en el teléfono antes de subirse, para que quepan en el límite de Vercel.
+Con Blob, la dueña entra a `/gestionar` en el sitio publicado y los cambios se guardan en internet. Sin Blob, el sitio muestra el catálogo de partida, pero no puede guardar productos nuevos. Las fotos se reducen en el teléfono antes de subirse.
 
 El enlace de gestión es `/gestionar`. También está al pie de la página. No sale en el menú principal; la contraseña es lo que lo protege.

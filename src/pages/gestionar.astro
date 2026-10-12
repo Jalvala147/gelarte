@@ -2,6 +2,7 @@
 import Encabezado from "../components/Encabezado.astro";
 import Pie from "../components/Pie.astro";
 import Base from "../layouts/Base.astro";
+import { negocio } from "../data/negocio";
 import { COOKIE, gestionConfigurada, sesionValida } from "../lib/auth";
 import { destinoGuardado, listarTodo } from "../lib/catalogo";
 import { formatoPrecio } from "../lib/texto";
@@ -24,8 +25,8 @@ if (authed) {
 ---
 
 <Base
-  titulo="Gestión · Gelarte"
-  descripcion="Espacio privado para agregar y actualizar las gelatinas de Gelarte."
+  titulo={`Gestión · ${negocio.nombre}`}
+  descripcion={`Espacio privado para agregar y actualizar las gelatinas de ${negocio.nombre}.`}
   robots="noindex, nofollow"
 >
   <Encabezado />
@@ -61,7 +62,7 @@ if (authed) {
             <div>
               <h1 class="font-serif text-5xl leading-none font-semibold">Catálogo</h1>
               <p class="mt-3 max-w-xl leading-relaxed">
-                Los sabores de ejemplo se pueden corregir o quitar. Uno nuevo aparece en la página al guardarlo.
+                Agrega una gelatina nueva o abre una existente para corregir sus datos y acomodar la foto.
               </p>
             </div>
             <button id="salir" class="boton-linea" type="button">Salir</button>
@@ -81,6 +82,13 @@ if (authed) {
               </p>
             )
           }
+          {
+            destino === "blob" && (
+              <p class="rounded-2xl bg-white p-4 text-sm">
+                Los cambios de esta página se guardan en internet y se ven al momento.
+              </p>
+            )
+          }
 
           <form id="nueva" class="grid gap-4 rounded-[2rem] bg-white p-6 shadow-[0_12px_32px_rgba(123,63,27,0.06)]">
             <h2 class="font-serif text-3xl leading-none font-semibold">Nueva gelatina</h2>
@@ -91,6 +99,11 @@ if (authed) {
             <label>
               <span class="mb-2 block text-sm font-bold">Descripción</span>
               <textarea class="campo min-h-24" name="descripcion" required maxlength="240" />
+            </label>
+            <label>
+              <span class="mb-2 block text-sm font-bold">Palabras de búsqueda</span>
+              <input class="campo" name="etiquetas" maxlength="240" placeholder="chocolate, fresa" autocomplete="off" />
+              <span class="mt-2 block text-sm text-marron/70">Sepáralas con comas. La gelatina aparece al buscar cualquiera de esas palabras.</span>
             </label>
             <div class="grid gap-4 sm:grid-cols-3">
               <label>
@@ -103,19 +116,42 @@ if (authed) {
               </label>
               <label>
                 <span class="mb-2 block text-sm font-bold">Precio</span>
-                <input class="campo" name="precio" type="number" inputmode="numeric" min="1" max="9999" step="1" required />
+                <input class="campo" name="precio" type="number" inputmode="numeric" min="0" max="9999" step="1" />
+                <span class="mt-2 block text-sm text-marron/70">Vacío o 0: se consulta por WhatsApp.</span>
               </label>
               <label>
-                <span class="mb-2 block text-sm font-bold">Unidad</span>
-                <input class="campo" name="unidad" value="vaso" maxlength="24" />
+                <span class="mb-2 block text-sm font-bold">Tamaño</span>
+                <input class="campo" name="unidad" value="Mediana" maxlength="24" />
               </label>
             </div>
             <label>
               <span class="mb-2 block text-sm font-bold">Foto</span>
-              <input id="foto" class="campo" name="imagen" type="file" accept="image/*" />
-              <span class="mt-2 block text-sm text-marron/70">Si no eliges foto, se usa la ilustración genérica. Puede salir del teléfono.</span>
+              <input class="campo" name="imagen" type="file" accept="image/*" />
+              <span class="mt-2 block text-sm text-marron/70">Si no eliges foto, se usa el logo. Puede salir del teléfono.</span>
             </label>
-            <img id="vista" alt="Vista previa de la foto" class="h-40 w-40 rounded-2xl object-cover" hidden />
+            <div class="grid gap-4 sm:grid-cols-[12rem_1fr] sm:items-center" data-acomodo hidden>
+              <div
+                data-marco
+                class="relative aspect-square cursor-grab touch-none overflow-hidden rounded-2xl bg-rosa select-none"
+              >
+                <img
+                  data-preview
+                  alt="Así se verá en el catálogo"
+                  class="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                  style="object-position: center 50%"
+                />
+              </div>
+              <label>
+                <span class="mb-2 block text-sm font-bold">Acomodar la foto</span>
+                <span class="mb-3 block text-sm text-marron/70">
+                  Arrastra la foto, o mueve la barra, para subirla o bajarla y centrar la gelatina.
+                </span>
+                <input class="encuadre" data-encuadre type="range" name="encuadre" min="0" max="100" step="1" value="50" />
+                <span class="mt-1 flex justify-between text-xs font-bold text-marron/70">
+                  <span>Arriba</span><span>Centro</span><span>Abajo</span>
+                </span>
+              </label>
+            </div>
             <p data-error class="font-bold" hidden role="alert" />
             <button class="boton" type="submit">Publicar gelatina</button>
           </form>
@@ -124,8 +160,9 @@ if (authed) {
             errorCatalogo ? (
               <p class="rounded-[1.5rem] bg-white p-6 font-bold" role="alert">{errorCatalogo}</p>
             ) : (
-              <div class="grid gap-3">
-                <h2 class="font-serif text-3xl leading-none font-semibold">Publicadas</h2>
+              <div id="editar" class="grid scroll-mt-24 gap-3">
+                <h2 class="font-serif text-3xl leading-none font-semibold">Editar existentes</h2>
+                <p class="text-sm text-marron/70">Abre una gelatina para cambiar sus datos o centrar la foto.</p>
                 {productos.length === 0 && <p class="rounded-[1.5rem] bg-white p-6">El catálogo está vacío.</p>}
                 {productos.map((producto) => (
                   <details class="rounded-[1.5rem] border border-ocre/50 bg-white">
@@ -136,6 +173,7 @@ if (authed) {
                         width="56"
                         height="56"
                         class="h-14 w-14 rounded-xl bg-rosa object-cover"
+                        style={`object-position: center ${producto.encuadre ?? 50}%`}
                       />
                       <span class="min-w-0 flex-1">
                         <span class="block truncate font-serif text-2xl leading-none">{producto.nombre}</span>
@@ -147,6 +185,39 @@ if (authed) {
                       <span class="text-sm font-bold">Editar</span>
                     </summary>
                     <form class="grid gap-4 border-t border-ocre/30 p-4" data-editar data-id={producto.id}>
+                      <div class="grid gap-4 sm:grid-cols-[12rem_1fr] sm:items-center">
+                        <div
+                          data-marco
+                          class="relative aspect-square cursor-grab touch-none overflow-hidden rounded-2xl bg-rosa select-none"
+                        >
+                          <img
+                            data-preview
+                            src={imagenSegura(producto.imagen)}
+                            alt={`Encuadre de ${producto.nombre}`}
+                            class="pointer-events-none absolute inset-0 h-full w-full object-cover"
+                            style={`object-position: center ${producto.encuadre ?? 50}%`}
+                          />
+                        </div>
+                        <label>
+                          <span class="mb-2 block text-sm font-bold">Acomodar la foto</span>
+                          <span class="mb-3 block text-sm text-marron/70">
+                            Arrastra la foto, o mueve la barra, para subirla o bajarla y centrar la gelatina.
+                          </span>
+                          <input
+                            class="encuadre"
+                            data-encuadre
+                            type="range"
+                            name="encuadre"
+                            min="0"
+                            max="100"
+                            step="1"
+                            value={producto.encuadre ?? 50}
+                          />
+                          <span class="mt-1 flex justify-between text-xs font-bold text-marron/70">
+                            <span>Arriba</span><span>Centro</span><span>Abajo</span>
+                          </span>
+                        </label>
+                      </div>
                       <label>
                         <span class="mb-2 block text-sm font-bold">Nombre</span>
                         <input class="campo" name="nombre" required maxlength="60" value={producto.nombre} />
@@ -154,6 +225,11 @@ if (authed) {
                       <label>
                         <span class="mb-2 block text-sm font-bold">Descripción</span>
                         <textarea class="campo min-h-24" name="descripcion" required maxlength="240">{producto.descripcion}</textarea>
+                      </label>
+                      <label>
+                        <span class="mb-2 block text-sm font-bold">Palabras de búsqueda</span>
+                        <input class="campo" name="etiquetas" maxlength="240" value={(producto.etiquetas ?? []).join(", ")} placeholder="chocolate, fresa" />
+                        <span class="mt-2 block text-sm font-normal text-marron/70">Sepáralas con comas. Por ejemplo: chocolate, fresa.</span>
                       </label>
                       <div class="grid gap-4 sm:grid-cols-3">
                         <label>
@@ -168,7 +244,8 @@ if (authed) {
                         </label>
                         <label>
                           <span class="mb-2 block text-sm font-bold">Precio</span>
-                          <input class="campo" name="precio" type="number" min="1" max="9999" step="1" required value={producto.precio} />
+                          <input class="campo" name="precio" type="number" min="0" max="9999" step="1" value={producto.precio > 0 ? producto.precio : undefined} />
+                          <span class="mt-2 block text-sm font-normal text-marron/70">Vacío o 0: se consulta.</span>
                         </label>
                         <label>
                           <span class="mb-2 block text-sm font-bold">Unidad</span>

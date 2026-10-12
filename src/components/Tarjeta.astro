@@ -1,5 +1,5 @@
 ---
-import { enlaceWhatsapp } from "../data/negocio";
+import { enlaceWhatsapp, negocio } from "../data/negocio";
 import { formatoPrecio, normalizar } from "../lib/texto";
 import { imagenSegura, nombreCategoria, type Producto } from "../lib/tipos";
 
@@ -9,11 +9,19 @@ interface Props {
 
 const { producto } = Astro.props;
 const categoria = nombreCategoria(producto.categoria);
+const consulta = producto.precio <= 0;
 const precio = formatoPrecio(producto.precio);
 const foto = imagenSegura(producto.imagen);
-const generica = foto.endsWith("/imagenes/gelatina.svg");
-const pedido = enlaceWhatsapp(`Hola, quiero apartar la gelatina de ${producto.nombre} (${precio}).`);
-const buscar = normalizar(`${producto.nombre} ${producto.descripcion} ${categoria}`);
+const generica = foto === "/marca/logo.jpg";
+const encuadre = producto.encuadre ?? 50;
+const pedido = enlaceWhatsapp(
+  consulta
+    ? `Hola, quiero apartar ${producto.nombre} de ${negocio.nombre}.`
+    : `Hola, quiero apartar ${producto.nombre} de ${negocio.nombre} (${precio}).`,
+);
+const buscar = normalizar(
+  `${producto.nombre} ${producto.descripcion} ${categoria} ${(producto.etiquetas ?? []).join(" ")}`,
+);
 ---
 
 <article
@@ -29,6 +37,7 @@ const buscar = normalizar(`${producto.nombre} ${producto.descripcion} ${categori
       width="640"
       height="640"
       class:list={["absolute inset-0 h-full w-full", generica ? "object-contain p-8" : "object-cover"]}
+      style={generica ? undefined : `object-position: center ${encuadre}%`}
     />
   </div>
   <div class="flex flex-1 flex-col gap-3 p-5">
@@ -37,7 +46,7 @@ const buscar = normalizar(`${producto.nombre} ${producto.descripcion} ${categori
     <p class="text-sm leading-relaxed text-marron/80">{producto.descripcion}</p>
     <div class="mt-auto flex items-end justify-between gap-3 pt-2">
       <p>
-        <span class="font-serif text-4xl leading-none">{precio}</span>
+        <span class:list={["font-serif leading-none", consulta ? "text-2xl" : "text-4xl"]}>{precio}</span>
         <span class="mt-1 block text-sm text-marron/70">{producto.unidad}</span>
       </p>
       <a class="boton" href={pedido} target="_blank" rel="noopener noreferrer">Pedir</a>

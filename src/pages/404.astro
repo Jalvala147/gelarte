@@ -2,9 +2,10 @@
 import Encabezado from "../components/Encabezado.astro";
 import Pie from "../components/Pie.astro";
 import Base from "../layouts/Base.astro";
+import { negocio } from "../data/negocio";
 ---
 
-<Base titulo="Página no encontrada · Gelarte" descripcion="Esa página no está en Gelarte.">
+<Base titulo={`Página no encontrada · ${negocio.nombre}`} descripcion={`Esa página no está en ${negocio.nombre}.`}>
   <Encabezado />
   <main class="mx-auto flex w-full max-w-xl flex-1 flex-col items-center px-4 py-24 text-center">
     <h1 class="font-serif text-5xl leading-none font-semibold">Esa página no está</h1>

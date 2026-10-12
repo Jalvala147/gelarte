@@ -1,13 +1,13 @@
 ---
 import { enlaceWhatsapp, negocio } from "../data/negocio";
 
-const pedido = enlaceWhatsapp("Hola, quiero hacer un pedido de gelatinas Gelarte.");
+const pedido = enlaceWhatsapp(`Hola, quiero hacer un pedido de gelatinas ${negocio.nombre}.`);
 ---
 
 <header class="sticky top-0 z-20 border-b border-ocre/40 bg-crema/90 backdrop-blur-md">
   <div class="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
     <a href="/" class="flex items-center gap-2">
-      <img src="/favicon.svg" alt="" width="40" height="40" class="h-10 w-10" />
+      <img src="/favicon.ico" alt="" width="40" height="40" class="h-10 w-10 rounded-xl" />
       <span class="font-serif text-3xl leading-none font-semibold tracking-wide">{negocio.nombre}</span>
     </a>
     <nav class="flex items-center gap-3 text-sm font-bold sm:gap-5" aria-label="Secciones">

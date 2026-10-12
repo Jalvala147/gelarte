@@ -70,17 +70,69 @@ nueva?.addEventListener("submit", (evento) => {
   void guardarFormulario(nueva, "/api/productos", "POST");
 });
 
-const foto = document.querySelector<HTMLInputElement>("#foto");
-const vista = document.querySelector<HTMLImageElement>("#vista");
-let vistaUrl = "";
-foto?.addEventListener("change", () => {
-  const archivo = foto.files?.[0];
-  if (vistaUrl) URL.revokeObjectURL(vistaUrl);
-  if (!archivo || !vista) return;
-  vistaUrl = URL.createObjectURL(archivo);
-  vista.src = vistaUrl;
-  vista.hidden = false;
-});
+function aplicarEncuadre(foto: HTMLImageElement, valor: string) {
+  foto.style.objectPosition = `center ${valor}%`;
+}
+
+function recorrido(foto: HTMLImageElement, marco: HTMLElement) {
+  const alto = marco.clientHeight;
+  const ancho = marco.clientWidth;
+  if (!foto.naturalWidth || !foto.naturalHeight || !alto || !ancho) return Math.max(1, alto);
+  const escala = Math.max(ancho / foto.naturalWidth, alto / foto.naturalHeight);
+  const sobra = foto.naturalHeight * escala - alto;
+  return Math.max(1, sobra, alto * 0.4);
+}
+
+function enlazarMarco(marco: HTMLElement) {
+  const formulario = marco.closest("form");
+  const rango = formulario?.querySelector<HTMLInputElement>("[data-encuadre]");
+  const foto = marco.querySelector<HTMLImageElement>("[data-preview]");
+  if (!rango || !foto) return;
+
+  const aplicar = () => aplicarEncuadre(foto, rango.value);
+  rango.addEventListener("input", aplicar);
+  aplicar();
+
+  let arrastre: { y: number; valor: number } | null = null;
+  marco.addEventListener("pointerdown", (evento) => {
+    if (evento.button !== 0) return;
+    arrastre = { y: evento.clientY, valor: Number(rango.value) };
+    marco.setPointerCapture(evento.pointerId);
+  });
+  marco.addEventListener("pointermove", (evento) => {
+    if (!arrastre || !marco.hasPointerCapture(evento.pointerId)) return;
+    const delta = ((evento.clientY - arrastre.y) / recorrido(foto, marco)) * 100;
+    rango.value = String(Math.min(100, Math.max(0, Math.round(arrastre.valor - delta))));
+    aplicar();
+  });
+  const soltar = (evento: PointerEvent) => {
+    if (marco.hasPointerCapture(evento.pointerId)) marco.releasePointerCapture(evento.pointerId);
+    arrastre = null;
+  };
+  marco.addEventListener("pointerup", soltar);
+  marco.addEventListener("pointercancel", soltar);
+}
+
+for (const marco of document.querySelectorAll<HTMLElement>("[data-marco]")) {
+  enlazarMarco(marco);
+}
+
+for (const entrada of document.querySelectorAll<HTMLInputElement>('input[type="file"][name="imagen"]')) {
+  entrada.addEventListener("change", () => {
+    const formulario = entrada.closest("form");
+    const foto = formulario?.querySelector<HTMLImageElement>("[data-preview]");
+    const acomodo = formulario?.querySelector<HTMLElement>("[data-acomodo]");
+    const archivo = entrada.files?.[0];
+    if (!foto) return;
+    const previa = foto.dataset.objectUrl;
+    if (previa) URL.revokeObjectURL(previa);
+    if (!archivo) return;
+    const url = URL.createObjectURL(archivo);
+    foto.dataset.objectUrl = url;
+    foto.src = url;
+    if (acomodo) acomodo.hidden = false;
+  });
+}
 
 for (const formulario of document.querySelectorAll<HTMLFormElement>("[data-editar]")) {
   formulario.addEventListener("submit", (evento) => {
